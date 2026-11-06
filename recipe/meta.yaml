@@ -1,10 +1,10 @@
 {% set name = "pylatexenc" %}
-{% set version = "2.10" %}
-{% set sha256 = "bcb859affea00b5acb25aec780620170ab9d385c8f7dc266b7237ce9f47a59fd" %}
+{% set version = "2.11" %}
+{% set sha256 = "5f622ef586dbffeb8ccd6ac210431ff0acf41d74275de179696e38006c28b862" %}
 
 package:
   name: {{ name }}
-  version: {{ version }}
+  version: "{{ version }}"
 
 source:
   url: https://github.com/phfaist/pylatexenc/archive/v{{ version }}.tar.gz
@@ -12,8 +12,7 @@ source:
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . --no-deps -vv
-  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - latexwalker = pylatexenc.latexwalker.__main__:main
     - latex2text = pylatexenc.latex2text.__main__:main
@@ -21,18 +20,26 @@ build:
 
 requirements:
   host:
-    - python >=3.6
+    - python
+    - setuptools
     - pip
   run:
-    - python >=3.6
+    - python
 
 test:
   imports:
     - pylatexenc
+    - pylatexenc.latexwalker
+    - pylatexenc.latex2text
+    - pylatexenc.latexencode
   commands:
+    - pip check
     - latexwalker --help
     - latex2text --help
     - latexencode --help
+    - python -c "from pylatexenc.latex2text import LatexNodes2Text; assert LatexNodes2Text().latex_to_text(r'\textbf{hello}') == 'hello'"
+  requires:
+    - pip
 
 about:
   home: https://github.com/phfaist/pylatexenc
@@ -40,7 +47,8 @@ about:
   license_family: MIT
   license_file: LICENSE.txt
   summary: Simple LaTeX parser providing latex-to-unicode and unicode-to-latex conversion
-  doc_url: https://pylatexenc.readthedocs.io/en/latest
+  description: A LaTeX parser and utilities for converting LaTeX to Unicode text and Unicode text to LaTeX.
+  doc_url: https://pylatexenc.readthedocs.io
   dev_url: https://github.com/phfaist/pylatexenc
 
 extra:
